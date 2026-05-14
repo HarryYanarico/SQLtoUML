@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://harryyanarico.github.io/SQLtoUML/sitemap.xml
