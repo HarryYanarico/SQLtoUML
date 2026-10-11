@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { useNodesState, useEdgesState, Node, Edge } from '@xyflow/react'
 import SqlEditor from './components/SqlEditor'
 import DiagramCanvas, { DiagramCanvasRef } from './components/DiagramCanvas'
+import FaqModal from './components/FaqModal'
 import { parseSql } from './parsers/sqlParser'
 import { sqlToUml } from './converters/sqlToUml'
 import { getLayoutedElements } from './utils/elkLayout'
@@ -57,6 +58,7 @@ export default function App() {
   const [panelVisible, setPanelVisible] = useState(true)
   const [fontScale, setFontScale] = useState(1)
   const [darkMode, setDarkMode] = useState(false)
+  const [isFaqOpen, setIsFaqOpen] = useState(false)
   const diagramRef = useRef<DiagramCanvasRef>(null)
 
   useEffect(() => {
@@ -136,6 +138,7 @@ export default function App() {
           onExport={handleExport}
           onToggleLineStyle={setUseStraightLines}
           useStraightLines={useStraightLines}
+          onOpenFaq={() => setIsFaqOpen(true)}
         />
       </div>
 
@@ -143,6 +146,7 @@ export default function App() {
         onClick={() => setPanelVisible(v => !v)}
         className="flex-shrink-0 w-6 bg-slate-100 hover:bg-slate-200 border-r border-slate-300 flex items-center justify-center cursor-pointer transition-colors z-10"
         title={panelVisible ? 'Ocultar panel' : 'Mostrar panel'}
+        aria-label={panelVisible ? 'Ocultar panel lateral' : 'Mostrar panel lateral'}
       >
         <svg
           className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${panelVisible ? '' : 'rotate-180'}`}
@@ -157,6 +161,7 @@ export default function App() {
           onClick={() => setDarkMode(v => !v)}
           className="absolute top-2 right-2 z-30 px-2.5 py-1.5 text-xs rounded transition-colors bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 shadow-sm hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300"
           title={darkMode ? 'Modo claro' : 'Modo oscuro'}
+          aria-label={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
         >
           {darkMode ? '☀️' : '🌙'}
         </button>
@@ -207,6 +212,7 @@ export default function App() {
           </div>
         )}
       </div>
+      <FaqModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} />
     </div>
   )
 }

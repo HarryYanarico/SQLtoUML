@@ -2,13 +2,128 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Convierte sentencias SQL CREATE TABLE en diagramas entidad-relación (DER/UML) de forma visual e interactiva." />
-    <title>SQL to UML - Generador de Diagramas Entidad-Relación</title>
+    
+    <!-- Metadatos SEO Principales -->
+    <title>SQL to UML | Convertidor de SQL a Diagrama Entidad-Relación (DER) Gratis Online</title>
+    <meta name="description" content="Convierte sentencias SQL CREATE TABLE en diagramas entidad-relación (DER/UML) interactivos al instante. Exporta a PNG, soporta claves foráneas y modo oscuro. Herramienta online 100% gratuita." />
+    <meta name="keywords" content="sql to uml, sql to erd, sql a der, generador diagrama entidad relacion, convertidor sql a diagrama, modelado de base de datos, diagrama de clases sql, sql erd generator online, exportar diagrama sql png" />
+    <meta name="author" content="Harry Yanarico" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://harryyanarico.github.io/SQLtoUML/" />
+    <meta name="theme-color" content="#2563eb" />
+
+    <!-- Favicon e Iconos -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+    <link rel="manifest" href="site.webmanifest" />
+
+    <!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://harryyanarico.github.io/SQLtoUML/" />
+    <meta property="og:site_name" content="SQL to UML" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content="SQL to UML | Convertidor de SQL a Diagrama Entidad-Relación (DER) Gratis Online" />
+    <meta property="og:description" content="Genera diagramas entidad-relación y UML interactivos a partir de sentencias SQL CREATE TABLE. Visualiza claves foráneas, edita multiplicidades y exporta a PNG gratis." />
+    <meta property="og:image" content="https://harryyanarico.github.io/SQLtoUML/og-image.png" />
+    <meta property="og:image:alt" content="Captura de pantalla de la aplicación SQL to UML con editor de SQL y diagrama generado" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SQL to UML | Convertidor de SQL a Diagrama Entidad-Relación (DER) Gratis Online" />
+    <meta name="twitter:description" content="Convierte código SQL en diagramas DER y UML interactivos al instante. Exporta en PNG y edita multiplicidades." />
+    <meta name="twitter:image" content="https://harryyanarico.github.io/SQLtoUML/og-image.png" />
+    <meta name="twitter:image:alt" content="Generador de Diagramas Entidad-Relación desde SQL" />
+
+    <!-- Datos Estructurados JSON-LD: SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SQL to UML",
+      "alternateName": ["SQL to ERD", "SQL a DER Online", "Generador DER SQL"],
+      "url": "https://harryyanarico.github.io/SQLtoUML/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript and HTML5 support",
+      "softwareVersion": "1.0",
+      "description": "Herramienta online para convertir sentencias SQL CREATE TABLE en diagramas entidad-relación (DER/UML) interactivos con soporte para claves foráneas y exportación a imagen PNG.",
+      "image": "https://harryyanarico.github.io/SQLtoUML/og-image.png",
+      "screenshot": "https://harryyanarico.github.io/SQLtoUML/og-image.png",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Harry Yanarico"
+      },
+      "featureList": [
+        "Conversión automática de sentencias CREATE TABLE a diagramas entidad-relación",
+        "Detección inteligente de FOREIGN KEY y relaciones 1:1, 1:N y N:M",
+        "Organización automática de nodos con algoritmo ELK",
+        "Exportación de diagramas a imagen PNG de alta calidad",
+        "Edición interactiva de multiplicidades y etiquetas de relación",
+        "Soporte de modo oscuro y modo claro",
+        "Procesamiento 100% en el navegador web sin enviar datos a servidores"
+      ]
+    }
+    </script>
+
+    <!-- Datos Estructurados JSON-LD: HowTo -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Cómo convertir sentencias SQL en diagramas entidad-relación (DER)",
+      "description": "Guía rápida para generar diagramas UML/DER interactivos a partir de sentencias SQL CREATE TABLE.",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "1. Escribe o pega tu código SQL",
+          "text": "Escribe las sentencias CREATE TABLE con sus PRIMARY KEY y FOREIGN KEY en el panel del editor SQL."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "2. Genera el diagrama entidad-relación",
+          "text": "Haz clic en el botón 'Generar Diagrama'. El algoritmo analizará la sintaxis y ubicará las tablas con sus conexiones."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "3. Personaliza y exporta",
+          "text": "Reorganiza las entidades, edita etiquetas o multiplicidades si lo deseas y haz clic en 'Exportar PNG' para descargar tu diagrama."
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
-    
+    <!-- Fallback semántico para motores de búsqueda y navegadores sin JS -->
+    <noscript>
+      <header style="max-width: 900px; margin: 2rem auto; padding: 1.5rem; font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #1e293b;">
+        <h1 style="font-size: 2rem; color: #2563eb; margin-bottom: 0.5rem;">SQL to UML - Generador de Diagramas Entidad-Relación (DER)</h1>
+        <p style="font-size: 1.1rem; color: #475569;">
+          Herramienta web interactiva y gratuita para transformar sentencias SQL <code>CREATE TABLE</code> en diagramas entidad-relación (DER/ERD) y diagramas de clases UML de forma visual.
+        </p>
+        <section style="margin-top: 1.5rem;">
+          <h2 style="font-size: 1.4rem; color: #0f172a;">Características principales</h2>
+          <ul>
+            <li>Conversión directa desde SQL estándar (compatible con PostgreSQL, MySQL, SQLite, MariaDB y SQL Server).</li>
+            <li>Detección automática de relaciones entre tablas mediante <code>FOREIGN KEY</code> y <code>PRIMARY KEY</code>.</li>
+            <li>Soporte para relaciones uno a uno (1:1), uno a muchos (1:N), muchos a muchos (N:M) y relaciones reflexivas/recursivas.</li>
+            <li>Exportación en alta calidad a imagen PNG.</li>
+            <li>100% privado: el código SQL se procesa localmente en tu navegador.</li>
+          </ul>
+        </section>
+        <p style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
+          <em>Para utilizar la interfaz interactiva con editor de código, minimapa y zoom, por favor activa JavaScript en tu navegador.</em>
+        </p>
+      </header>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
