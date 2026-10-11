@@ -7,6 +7,7 @@ interface SqlEditorProps {
   onExport: () => void
   onToggleLineStyle: (useStraightLines: boolean) => void
   useStraightLines?: boolean
+  onOpenFaq?: () => void
 }
 
 const defaultSql = `-- Ejemplo de SQL con relaciones
@@ -52,7 +53,15 @@ CREATE TABLE categoria (
   FOREIGN KEY (padre_id) REFERENCES categoria(id)
 );`
 
-export default function SqlEditor({ value, onChange, onParse, onExport, onToggleLineStyle, useStraightLines = false }: SqlEditorProps) {
+export default function SqlEditor({
+  value,
+  onChange,
+  onParse,
+  onExport,
+  onToggleLineStyle,
+  useStraightLines = false,
+  onOpenFaq
+}: SqlEditorProps) {
   const [localValue, setLocalValue] = useState(value)
 
   useEffect(() => {
@@ -75,18 +84,40 @@ export default function SqlEditor({ value, onChange, onParse, onExport, onToggle
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-800">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700">
-        <h2 className="font-semibold text-slate-700 dark:text-slate-200">Editor SQL</h2>
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/70">
+        <div className="flex items-center gap-2 min-w-0">
+          <img src="favicon.svg" alt="Logo de SQL to UML" className="w-5 h-5 flex-shrink-0" />
+          <div className="min-w-0">
+            <h1 className="font-bold text-xs sm:text-sm text-slate-800 dark:text-slate-100 truncate">
+              SQL to UML
+            </h1>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 hidden sm:block leading-none">
+              Generador DER
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {onOpenFaq && (
+            <button
+              onClick={onOpenFaq}
+              title="Guía y Preguntas Frecuentes"
+              aria-label="Abrir guía de ayuda y preguntas frecuentes"
+              className="px-2 py-1 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 rounded transition-colors font-medium flex items-center gap-1"
+            >
+              <span>Ayuda</span>
+            </button>
+          )}
           <button
             onClick={handleLoadSample}
-            className="px-3 py-1.5 text-sm bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 rounded transition-colors"
+            aria-label="Cargar ejemplo de SQL"
+            className="px-2.5 py-1 text-xs bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 rounded transition-colors"
           >
-            Cargar Ejemplo
+            Ejemplo
           </button>
           <button
             onClick={onParse}
-            className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors font-medium"
+            aria-label="Generar diagrama UML"
+            className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors font-medium shadow-sm"
           >
             Generar Diagrama
           </button>

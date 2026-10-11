@@ -1,0 +1,17 @@
+{
+  "name": "SQL to UML - Generador de Diagramas Entidad-Relación",
+  "short_name": "SQLtoUML",
+  "description": "Convierte sentencias SQL CREATE TABLE en diagramas entidad-relación (DER/UML) interactivos.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
