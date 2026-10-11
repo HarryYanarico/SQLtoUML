@@ -11,11 +11,34 @@ function getColumnMultiplicity(table: SqlTable, fk: SqlForeignKey): string {
   return '0..*'
 }
 
-function getReferencedMultiplicity(_tables: SqlTable[], _referencedTableName: string, _fk: SqlForeignKey): string {
+function getReferencedMultiplicity(tables: SqlTable[], referencedTableName: string, fk: SqlForeignKey): string {
+  const referencedTable = tables.find(t => t.name.toLowerCase() === referencedTableName.toLowerCase())
+  if (!referencedTable) return '1'
+
+  const referencedCol = referencedTable.columns.find(c => c.name.toLowerCase() === fk.referencedColumn.toLowerCase())
+  if (!referencedCol) return '1'
+
+  if (referencedCol.isPrimaryKey) return '1'
+  if (referencedCol.isUnique) return '0..1'
   return '1'
 }
 
-function determineRelationshipType(_table: SqlTable, _fk: SqlForeignKey): UmlRelationshipType {
+function determineRelationshipType(table: SqlTable, fk: SqlForeignKey): UmlRelationshipType {
+  const col = table.columns.find(c => c.name.toLowerCase() === fk.columnName.toLowerCase())
+  if (!col) return 'association'
+
+  if (fk.onDelete === 'CASCADE' || fk.onUpdate === 'CASCADE') {
+    return 'composition'
+  }
+
+  if (fk.onDelete === 'SET NULL' || fk.onUpdate === 'SET NULL') {
+    return 'aggregation'
+  }
+
+  if (fk.onDelete === 'RESTRICT' || fk.onDelete === 'NO ACTION') {
+    return 'dependency'
+  }
+
   return 'association'
 }
 
@@ -85,6 +108,9 @@ export function sqlToUml(tables: SqlTable[]): { nodes: Node[]; edges: Edge[] } {
         })
         continue
       }
+
+      const targetExists = tables.some(t => t.name.toLowerCase() === fk.referencedTable.toLowerCase())
+      if (!targetExists) continue
 
       const existingRel = relationships.find(
         r => r.source === table.name && r.target === fk.referencedTable

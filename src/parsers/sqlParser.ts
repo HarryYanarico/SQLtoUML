@@ -8,32 +8,56 @@ function normalizeSql(sql: string): string {
     .trim()
 }
 
-function parseColumnDefinition(colStr: string): SqlColumn | null {
-  const match = colStr.match(/^(\w+)\s+(\w+(?:\([^)]+\))?)/i)
-  if (!match) return null
+function parseColumnDefinition(colStr: string): { column: SqlColumn | null; inlineFk: SqlForeignKey | null } {
+  const match = colStr.match(/^(\w+)\s+(\w+(?:\([^)]*\))?)/i)
+  if (!match) {
+    return { column: null, inlineFk: null }
+  }
 
   const name = match[1]
   const type = match[2].toUpperCase()
 
   const isPrimaryKey = /PRIMARY\s+KEY/i.test(colStr) ||
-    /PRIMARY_KEY/i.test(colStr) ||  // Algunos generadores usan esto
+    /PRIMARY_KEY/i.test(colStr) ||
     colStr.toUpperCase().includes('PRIMARY KEY')
   const isNullable = !/NOT\s+NULL/i.test(colStr) || /PRIMARY\s+KEY/i.test(colStr)
   const isUnique = /UNIQUE/i.test(colStr)
 
   let defaultValue: string | undefined
-  const defaultMatch = colStr.match(/DEFAULT\s+('[^']*'|\w+)/i)
+  const defaultMatch = colStr.match(/DEFAULT\s+(?:('[^']*')|([\w]+(?:\([^)]*\))))/i)
   if (defaultMatch) {
-    defaultValue = defaultMatch[1]
+    defaultValue = (defaultMatch[1] || defaultMatch[2])?.replace(/['"]+/g, '')
+  }
+
+  let inlineFk: SqlForeignKey | null = null
+  const refMatch = colStr.match(/REFERENCES\s+(\w+)\s*\(\s*(\w+)\s*\)/i)
+  if (refMatch) {
+    let onDelete: string | undefined
+    let onUpdate: string | undefined
+    const deleteMatch = colStr.match(/ON\s+DELETE\s+(\w+(?:\s+\w+)?)/i)
+    if (deleteMatch) onDelete = deleteMatch[1]
+    const updateMatch = colStr.match(/ON\s+UPDATE\s+(\w+(?:\s+\w+)?)/i)
+    if (updateMatch) onUpdate = updateMatch[1]
+
+    inlineFk = {
+      columnName: name,
+      referencedTable: refMatch[1],
+      referencedColumn: refMatch[2],
+      onDelete,
+      onUpdate
+    }
   }
 
   return {
-    name,
-    type,
-    isPrimaryKey,
-    isNullable: !isPrimaryKey && isNullable,
-    isUnique,
-    defaultValue
+    column: {
+      name,
+      type,
+      isPrimaryKey,
+      isNullable: !isPrimaryKey && isNullable,
+      isUnique,
+      defaultValue
+    },
+    inlineFk
   }
 }
 
@@ -82,10 +106,13 @@ function parseCreateTable(stmt: string): SqlTable | null {
       const fk = parseForeignKey(part)
       if (fk) foreignKeys.push(fk)
     } else if (/^(?:KEY|INDEX|CONSTRAINT|UNIQUE|FULLTEXT|SPATIAL|CHECK)\b/i.test(part)) {
-      // Skip standalone constraints (only if they START the part)
+      // Skip standalone constraints
     } else if (/^\w/.test(part)) {
-      const col = parseColumnDefinition(part)
-      if (col) columns.push(col)
+      const result = parseColumnDefinition(part)
+      if (result.column) columns.push(result.column)
+      if (result.inlineFk) {
+        foreignKeys.push(result.inlineFk)
+      }
     }
   }
 
@@ -93,7 +120,7 @@ function parseCreateTable(stmt: string): SqlTable | null {
     const col = columns.find(c => c.name.toLowerCase() === pk.toLowerCase())
     if (col) {
       col.isPrimaryKey = true
-      col.isNullable = false  // Las PK nunca son NULL
+      col.isNullable = false
     }
   }
 
@@ -102,14 +129,7 @@ function parseCreateTable(stmt: string): SqlTable | null {
       const otherFks = foreignKeys.filter(f => f !== fk)
       return otherFks.every(of => of.referencedTable !== fk.referencedTable)
     })
-  console.log('📋 Tabla parseada:', {
-    name: tableName,
-    columns: columns.map(c => ({
-      name: c.name,
-      isPrimaryKey: c.isPrimaryKey,
-      isForeignKey: foreignKeys.some(fk => fk.columnName === c.name)
-    }))
-  })
+
   return {
     name: tableName,
     columns,
@@ -124,9 +144,12 @@ function parseAlterTable(stmt: string, tables: Map<string, SqlTable>): SqlTable 
     const tableName = addColumnMatch[1]
     const table = tables.get(tableName.toLowerCase())
     if (table) {
-      const col = parseColumnDefinition(addColumnMatch[2])
-      if (col) {
-        table.columns.push(col)
+      const result = parseColumnDefinition(addColumnMatch[2])
+      if (result.column) {
+        table.columns.push(result.column)
+        if (result.inlineFk) {
+          table.foreignKeys.push(result.inlineFk)
+        }
         return table
       }
     }
@@ -161,7 +184,11 @@ function parseAlterTable(stmt: string, tables: Map<string, SqlTable>): SqlTable 
     const tableName = dropFkMatch[1]
     const table = tables.get(tableName.toLowerCase())
     if (table) {
-      table.foreignKeys = table.foreignKeys.filter((_, i) => i !== parseInt(dropFkMatch[2]) - 1)
+      const constraintName = dropFkMatch[2].toLowerCase()
+      table.foreignKeys = table.foreignKeys.filter(fk => {
+        const fkConstraintName = `fk_${fk.columnName}_${fk.referencedTable}`.toLowerCase()
+        return fkConstraintName !== constraintName && fk.columnName.toLowerCase() !== constraintName
+      })
       return table
     }
   }
@@ -180,10 +207,8 @@ function parseDropTable(stmt: string, tables: Map<string, SqlTable>): string | n
 }
 
 export function parseSql(sql: string): SqlTable[] {
-  console.log('🟢 parseSql ejecutándose, SQL recibido:', sql)
   const normalized = normalizeSql(sql)
   const statements = normalized.split(/;/).filter(s => s.trim())
-  console.log('📊 Statements encontrados:', statements.length)
 
   const tables = new Map<string, SqlTable>()
 

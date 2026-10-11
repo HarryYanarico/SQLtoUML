@@ -14,6 +14,6 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['@xyflow/react', 'elkjs', 'react', 'react-dom']
+    include: ['@xyflow/react', 'react', 'react-dom']
   }
 })

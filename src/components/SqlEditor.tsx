@@ -9,8 +9,8 @@ interface SqlEditorProps {
   useStraightLines?: boolean
 }
 
-const sampleSql = `-- Ejemplo de SQL con relaciones
-CREATE TABLE clientes (
+const defaultSql = `-- Ejemplo de SQL con relaciones
+CREATE TABLE cliente (
   id INT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   email VARCHAR(255) UNIQUE,
@@ -18,16 +18,16 @@ CREATE TABLE clientes (
   fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE pedidos (
+CREATE TABLE pedido (
   id INT PRIMARY KEY,
   cliente_id INT NOT NULL,
   fecha_pedido DATETIME NOT NULL,
   total DECIMAL(10,2),
   estado VARCHAR(20) DEFAULT 'pendiente',
-  FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
+  FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE
 );
 
-CREATE TABLE productos (
+CREATE TABLE producto (
   id INT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   descripcion TEXT,
@@ -35,21 +35,21 @@ CREATE TABLE productos (
   stock INT DEFAULT 0
 );
 
-CREATE TABLE pedidos_productos (
+CREATE TABLE pedidos_producto (
   pedido_id INT NOT NULL,
   producto_id INT NOT NULL,
   cantidad INT NOT NULL,
   precio_unitario DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (pedido_id, producto_id),
-  FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
-  FOREIGN KEY (producto_id) REFERENCES productos(id)
+  FOREIGN KEY (pedido_id) REFERENCES pedido(id) ON DELETE CASCADE,
+  FOREIGN KEY (producto_id) REFERENCES producto(id)
 );
 
-CREATE TABLE categorias (
+CREATE TABLE categoria (
   id INT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL,
   padre_id INT,
-  FOREIGN KEY (padre_id) REFERENCES categorias(id)
+  FOREIGN KEY (padre_id) REFERENCES categoria(id)
 );`
 
 export default function SqlEditor({ value, onChange, onParse, onExport, onToggleLineStyle, useStraightLines = false }: SqlEditorProps) {
@@ -65,8 +65,8 @@ export default function SqlEditor({ value, onChange, onParse, onExport, onToggle
   }
 
   const handleLoadSample = () => {
-    setLocalValue(sampleSql)
-    onChange(sampleSql)
+    setLocalValue(defaultSql)
+    onChange(defaultSql)
   }
 
   const handleToggleLineStyle = () => {

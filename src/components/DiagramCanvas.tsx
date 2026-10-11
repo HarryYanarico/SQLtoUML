@@ -6,7 +6,9 @@ import {
   MiniMap,
   Node,
   Edge,
-  ReactFlowProvider
+  ReactFlowProvider,
+  OnNodesChange,
+  OnEdgesChange
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
@@ -33,8 +35,8 @@ const edgeTypes = {
 interface DiagramCanvasProps {
   nodes: Node[]
   edges: Edge[]
-  onNodesChange: (changes: unknown) => void
-  onEdgesChange: (changes: unknown) => void
+  onNodesChange: OnNodesChange<Node>
+  onEdgesChange: OnEdgesChange<Edge>
   useStraightLines?: boolean
   onUpdateEdgeLabel?: (edgeId: string, label: string) => void
   onUpdateMultiplicity?: (edgeId: string, field: 'sourceMultiplicity' | 'targetMultiplicity', value: string) => void
@@ -100,8 +102,8 @@ const DiagramCanvas = forwardRef<DiagramCanvasRef, DiagramCanvasProps>(
           <ReactFlow
             nodes={nodes}
             edges={displayEdges}
-            onNodesChange={onNodesChange as never}
-            onEdgesChange={onEdgesChange as never}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             fitView

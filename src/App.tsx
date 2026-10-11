@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { useNodesState, useEdgesState } from '@xyflow/react'
+import { useNodesState, useEdgesState, Node, Edge } from '@xyflow/react'
 import SqlEditor from './components/SqlEditor'
 import DiagramCanvas, { DiagramCanvasRef } from './components/DiagramCanvas'
 import { parseSql } from './parsers/sqlParser'
@@ -51,8 +51,8 @@ CREATE TABLE categoria (
 
 export default function App() {
   const [sql, setSql] = useState(defaultSql)
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
   const [useStraightLines, setUseStraightLines] = useState(false)
   const [panelVisible, setPanelVisible] = useState(true)
   const [fontScale, setFontScale] = useState(1)
@@ -80,16 +80,10 @@ export default function App() {
 
       const { nodes: umlNodes, edges: umlEdges } = sqlToUml(tables)
 
-      const catNode = umlNodes.find(n => n.id.toLowerCase() === 'categoria')
-      if (catNode) {
-        const data = catNode.data as Record<string, unknown>
-        console.log('Nodo categoria:', data.name, 'cols:', data.columns)
-      }
-
       const layouted = getLayoutedElements(umlNodes, umlEdges)
 
-      setNodes([...layouted.nodes] as never[])
-      setEdges([...layouted.edges] as never[])
+      setNodes([...layouted.nodes])
+      setEdges([...layouted.edges])
     } catch (error) {
       console.error('Error parsing SQL:', error)
       alert('Error al procesar el SQL')
@@ -194,8 +188,8 @@ export default function App() {
               ref={diagramRef}
               nodes={nodes}
               edges={edges}
-              onNodesChange={onNodesChange as never}
-              onEdgesChange={onEdgesChange as never}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
               useStraightLines={useStraightLines}
               onUpdateEdgeLabel={handleUpdateEdgeLabel}
               onUpdateMultiplicity={handleUpdateMultiplicity}

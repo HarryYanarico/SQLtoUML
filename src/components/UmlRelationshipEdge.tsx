@@ -1,88 +1,10 @@
 import { memo, useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { BaseEdge, EdgeProps, getBezierPath, Position, useStore } from '@xyflow/react'
+import { BaseEdge, EdgeProps, getBezierPath, useStore } from '@xyflow/react'
 import { UmlRelationship } from '../types/uml'
 import { useEdgeLabelContext } from '../contexts/EdgeLabelContext'
 import MultiplicityEditor from './MultiplicityEditor'
-
-function getBorderPoint(
-  nx: number, ny: number, nw: number, nh: number,
-  ox: number, oy: number
-): { x: number; y: number } {
-  const cx = nx + nw / 2
-  const cy = ny + nh / 2
-  const dx = ox - cx
-  const dy = oy - cy
-
-  if (dx === 0 && dy === 0) return { x: cx, y: cy }
-
-  const candidates: { x: number; y: number; t: number }[] = []
-
-  if (dx > 0) {
-    const t = (nx + nw - cx) / dx
-    const y = cy + dy * t
-    if (y >= ny && y <= ny + nh) candidates.push({ x: nx + nw, y, t })
-  } else if (dx < 0) {
-    const t = (nx - cx) / dx
-    const y = cy + dy * t
-    if (y >= ny && y <= ny + nh) candidates.push({ x: nx, y, t })
-  }
-
-  if (dy > 0) {
-    const t = (ny + nh - cy) / dy
-    const x = cx + dx * t
-    if (x >= nx && x <= nx + nw) candidates.push({ x, y: ny + nh, t })
-  } else if (dy < 0) {
-    const t = (ny - cy) / dy
-    const x = cx + dx * t
-    if (x >= nx && x <= nx + nw) candidates.push({ x, y: ny, t })
-  }
-
-  if (candidates.length === 0) return { x: cx, y: cy }
-  candidates.sort((a, b) => a.t - b.t)
-  return { x: candidates[0].x, y: candidates[0].y }
-}
-
-function borderToPosition(bp: { x: number; y: number }, nx: number, ny: number, nw: number, nh: number): Position {
-  const eps = 1
-  if (Math.abs(bp.x - nx) < eps) return Position.Left
-  if (Math.abs(bp.x - (nx + nw)) < eps) return Position.Right
-  if (Math.abs(bp.y - ny) < eps) return Position.Top
-  if (Math.abs(bp.y - (ny + nh)) < eps) return Position.Bottom
-  const cx = nx + nw / 2
-  const cy = ny + nh / 2
-  if (bp.x >= cx && bp.y >= cy) return Position.Bottom
-  if (bp.x >= cx) return Position.Right
-  if (bp.y >= cy) return Position.Bottom
-  return Position.Top
-}
-
-function multiplicityOffset(
-  bp: { x: number; y: number },
-  nx: number, ny: number, nw: number, nh: number
-): { x: number; y: number } {
-  const eps = 1
-  if (Math.abs(bp.x - nx) < eps) return { x: -52, y: -11 }
-  if (Math.abs(bp.x - (nx + nw)) < eps) return { x: 12, y: -11 }
-  if (Math.abs(bp.y - ny) < eps) return { x: -30, y: -34 }
-  if (Math.abs(bp.y - (ny + nh)) < eps) return { x: -30, y: 12 }
-  return { x: 12, y: -11 }
-}
-
-function diamondOffset(
-  bp: { x: number; y: number },
-  nx: number, ny: number, nw: number, nh: number,
-  size: number
-): { dx: number; dy: number; orient: 'h' | 'v' } {
-  const eps = 1
-  if (Math.abs(bp.x - nx) < eps) return { dx: -size - 6, dy: 0, orient: 'h' }
-  if (Math.abs(bp.x - (nx + nw)) < eps) return { dx: -6, dy: 0, orient: 'h' }
-  if (Math.abs(bp.y - ny) < eps) return { dx: 0, dy: -size - 6, orient: 'v' }
-  if (Math.abs(bp.y - (ny + nh)) < eps) return { dx: 0, dy: -6, orient: 'v' }
-  return { dx: -6, dy: 0, orient: 'h' }
-}
-
-const NODE_DEFAULTS = { width: 260, height: 80 }
+import { NODE_DEFAULTS, getBorderPoint, borderToPosition, multiplicityOffset, diamondOffset, sanitizeLabel } from '../utils/edgeGeometry'
 
 function UmlRelationshipEdge({
   id,
@@ -170,6 +92,16 @@ function UmlRelationshipEdge({
     setEditingField('target')
   }
 
+  const handleEditLabel = () => {
+    const label = sanitizeLabel(window.prompt('Editar etiqueta:', userLabel))
+    if (label !== null) updateLabel(id, label)
+  }
+
+  const handleAddLabel = () => {
+    const label = sanitizeLabel(window.prompt('Añadir etiqueta:', ''))
+    if (label !== null) updateLabel(id, label)
+  }
+
   const diamondSize = 6
 
   return (
@@ -250,20 +182,14 @@ function UmlRelationshipEdge({
             {userLabel ? (
               <span
                 className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 whitespace-nowrap cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600"
-                onClick={() => {
-                  const label = window.prompt('Editar etiqueta:', userLabel)
-                  if (label !== null) updateLabel(id, label)
-                }}
+                onClick={handleEditLabel}
               >
                 {userLabel}
               </span>
             ) : (
               <span
                 className="w-5 h-5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-full shadow-sm hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 text-sm leading-none flex items-center justify-center cursor-pointer"
-                onClick={() => {
-                  const label = window.prompt('Añadir etiqueta:', '')
-                  if (label !== null) updateLabel(id, label)
-                }}
+                onClick={handleAddLabel}
                 title="Añadir etiqueta"
               >
                 +

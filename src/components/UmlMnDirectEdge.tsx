@@ -1,6 +1,7 @@
 import { memo, useState } from 'react'
 import { BaseEdge, EdgeProps, useStore } from '@xyflow/react'
 import { useEdgeLabelContext } from '../contexts/EdgeLabelContext'
+import { sanitizeLabel } from '../utils/edgeGeometry'
 
 function UmlMnDirectEdge({
   id,
@@ -40,6 +41,16 @@ function UmlMnDirectEdge({
   const midY = (cy1 + cy2) / 2
   const userLabel = (data as Record<string, unknown>)?.userLabel as string | undefined
 
+  const handleEditLabel = () => {
+    const label = sanitizeLabel(window.prompt('Editar etiqueta:', userLabel))
+    if (label !== null) updateLabel(id, label)
+  }
+
+  const handleAddLabel = () => {
+    const label = sanitizeLabel(window.prompt('Añadir etiqueta:', ''))
+    if (label !== null) updateLabel(id, label)
+  }
+
   return (
     <g onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <BaseEdge
@@ -64,20 +75,14 @@ function UmlMnDirectEdge({
             {userLabel ? (
               <span
                 className="bg-slate-100 px-1.5 py-0.5 rounded text-xs text-slate-600 border border-slate-200 whitespace-nowrap cursor-pointer hover:bg-slate-200"
-                onClick={() => {
-                  const label = window.prompt('Editar etiqueta:', userLabel)
-                  if (label !== null) updateLabel(id, label)
-                }}
+                onClick={handleEditLabel}
               >
                 {userLabel}
               </span>
             ) : (
               <span
                 className="w-5 h-5 bg-white border border-slate-300 rounded-full shadow-sm hover:bg-slate-100 text-slate-500 text-sm leading-none flex items-center justify-center cursor-pointer"
-                onClick={() => {
-                  const label = window.prompt('Añadir etiqueta:', '')
-                  if (label !== null) updateLabel(id, label)
-                }}
+                onClick={handleAddLabel}
                 title="Añadir etiqueta"
               >
                 +

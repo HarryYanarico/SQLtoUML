@@ -4,6 +4,7 @@ import { BaseEdge, EdgeProps, useStore, MarkerType } from '@xyflow/react'
 import { SqlColumn, UmlRelationship } from '../types/uml'
 import { useEdgeLabelContext } from '../contexts/EdgeLabelContext'
 import MultiplicityEditor from './MultiplicityEditor'
+import { sanitizeLabel } from '../utils/edgeGeometry'
 
 const FALLBACK_W = 260
 const FALLBACK_H = 80
@@ -123,7 +124,7 @@ function UmlRecursiveEdge({
               <span
                 className="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 whitespace-nowrap cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600"
                 onClick={() => {
-                  const label = window.prompt('Editar etiqueta:', userLabel)
+                  const label = sanitizeLabel(window.prompt('Editar etiqueta:', userLabel))
                   if (label !== null) updateLabel(id, label)
                 }}
               >
@@ -133,7 +134,7 @@ function UmlRecursiveEdge({
               <span
                 className="w-5 h-5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-full shadow-sm hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 text-sm leading-none flex items-center justify-center cursor-pointer"
                 onClick={() => {
-                  const label = window.prompt('Añadir etiqueta:', '')
+                  const label = sanitizeLabel(window.prompt('Añadir etiqueta:', ''))
                   if (label !== null) updateLabel(id, label)
                 }}
                 title="Añadir etiqueta"
