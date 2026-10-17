@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página no encontrada (404) | SQL to UML</title>
+    <meta name="description" content="La página que buscas no existe. Vuelve al convertidor de SQL a diagramas entidad-relación (DER/UML)." />
+    <meta name="robots" content="noindex, follow" />
+    
+    <!-- Favicon e Iconos -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+
+    <!-- Open Graph para evitar títulos genéricos al compartir enlaces rotos -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SQL to UML | Convertidor de SQL a Diagrama Entidad-Relación" />
+    <meta property="og:description" content="Convierte sentencias SQL CREATE TABLE en diagramas entidad-relación interactivos al instante." />
+    <meta property="og:image" content="https://harryyanarico.github.io/SQLtoUML/og-image.png" />
+    <meta property="og:url" content="https://harryyanarico.github.io/SQLtoUML/" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+      .card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 1rem;
+        padding: 2.5rem 2rem;
+        max-width: 520px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(37, 99, 235, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+      }
+      .icon-container {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.5rem auto;
+        background: #2563eb;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icon-container img {
+        width: 38px;
+        height: 38px;
+      }
+      h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+      }
+      p {
+        font-size: 1rem;
+        color: #94a3b8;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: #2563eb;
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.2s;
+      }
+      .btn-primary:hover {
+        background-color: #1d4ed8;
+      }
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        color: #cbd5e1;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .btn-secondary:hover {
+        color: #ffffff;
+      }
+      .countdown {
+        margin-top: 1.5rem;
+        font-size: 0.825rem;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="icon-container">
+        <img src="favicon.svg" alt="SQL to UML" />
+      </div>
+      <div class="badge">Error 404</div>
+      <h1>Página no encontrada</h1>
+      <p>
+        El enlace que intentas abrir no existe o ha sido movido. No te preocupes, puedes volver al convertidor y seguir modelando tu base de datos.
+      </p>
+
+      <div class="actions">
+        <a href="/SQLtoUML/" class="btn-primary" id="home-link">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" strokeLinejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Ir a SQL to UML
+        </a>
+      </div>
+
+      <div class="countdown" id="redirect-msg">
+        Redirigiendo al inicio en <span id="timer">5</span> segundos...
+      </div>
+    </div>
+
+    <script>
+      // Ajuste dinámico de la URL base
+      var basePath = '/SQLtoUML/';
+      var homeLink = document.getElementById('home-link');
+      if (homeLink) homeLink.href = basePath;
+
+      // Redirección suave automática después de 5 segundos
+      var seconds = 5;
+      var timerEl = document.getElementById('timer');
+      var interval = setInterval(function () {
+        seconds--;
+        if (timerEl) timerEl.textContent = seconds;
+        if (seconds <= 0) {
+          clearInterval(interval);
+          window.location.href = basePath;
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>
